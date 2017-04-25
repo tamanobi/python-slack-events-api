@@ -1,21 +1,17 @@
 from slackeventsapi import SlackEventAdapter
 from slackclient import SlackClient
-from flask import request
 import os
 
-# We'll store the SlackClient instances for each team in a
-# dictionary, so we can have multiple teams authed
-CLIENTS = {}
 
 # Our app's Slack Event Adapter for receiving actions via the Events API
 SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
 slack_events_adapter = SlackEventAdapter(SLACK_VERIFICATION_TOKEN, "/slack/events")
 
-# Slack bot user credentials
-SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 
 # Create a SlackClient for your bot to use for Web API requests
+SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 CLIENT = SlackClient(SLACK_BOT_TOKEN)
+
 
 # Example responder to greetings
 @slack_events_adapter.on("message")
@@ -36,6 +32,7 @@ def reaction_added(event_data):
     channel = event["item"]["channel"]
     text = ":%s:" % emoji
     CLIENT.api_call("chat.postMessage", channel=channel, text=text)
+
 
 # Once we have our event listeners configured, we can start the
 # Flask server with the default `/events` endpoint on port 3000
